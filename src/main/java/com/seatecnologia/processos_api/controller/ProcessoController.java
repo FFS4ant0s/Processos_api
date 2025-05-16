@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.seatecnologia.processos_api.models.Processo;
 import com.seatecnologia.processos_api.repository.ProcessoRepository;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/processos")
@@ -42,13 +44,14 @@ public class ProcessoController {
 
     // Criar novo processo
     @PostMapping
-    public Processo criar(@RequestBody Processo processo) {
+    public Processo criar(@Valid @RequestBody Processo processo) {
         return processoRepository.save(processo);
     }
 
     // Atualizar processo
     @PutMapping("/{id}")
-    public ResponseEntity<Processo> atualizar(@PathVariable Long id, @RequestBody Processo processoAtualizado) {
+    public ResponseEntity<Processo> atualizar(@PathVariable Long id, @Valid 
+    @RequestBody Processo processoAtualizado) {
         return processoRepository.findById(id)
                 .map(processo -> {
                     processo.setNumeroProcesso(processoAtualizado.getNumeroProcesso());

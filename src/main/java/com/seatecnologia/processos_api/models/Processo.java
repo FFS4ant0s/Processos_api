@@ -7,6 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "processos")
@@ -16,9 +19,20 @@ public class Processo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Número do processo é obrigatório")
+    @Size(min = 10, max = 50, message = "Número do processo deve ter entre 10 e 50 caracteres")
     private String numeroProcesso;
+    
+    @NotNull(message = "Assunto é obrigatório")
+    @Size(min = 3, max = 255, message = "Assunto deve ter entre 3 e 255 caracteres")
     private String assunto;
+
+    @NotNull(message = "Data de abertura é obrigatória")
+    @PastOrPresent(message = "Data de abertura não pode ser no futuro")
     private LocalDate dataAbertura;
+
+    @NotNull(message = "Status é obrigatório")
+    @Size(min = 3, max = 20, message = "Status deve ter entre 3 e 20 caracteres")
     private String status;
 
     // Construtor vazio
