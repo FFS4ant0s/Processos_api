@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.seatecnologia.processos_api.repository.ProcessoRepository;
@@ -106,5 +107,37 @@ public class ProcessoControllerTest {
             .andExpect(jsonPath("$.assunto").value("Novo Processo"))
             .andExpect(jsonPath("$.status").value("Aberto"));
     }
+
+    @Test
+public void testAtualizarProcesso_comSucesso() throws Exception {
+    Long id = 1L;
+
+    // Processo existente no "banco"
+    Processo processoExistente = new Processo("2024-00001", "Processo Antigo", LocalDate.of(2024, 1, 1), "Aberto");
+    processoExistente.setId(id);
+
+    // Processo enviado na requisição
+    Processo processoAtualizado = new Processo("2024-00001", "Processo Atualizado", LocalDate.of(2024, 1, 1), "Concluído");
+    processoAtualizado.setId(id);
+
+    // Simula o findById retornando o processo existente
+    Mockito.when(processoRepository.findById(id)).thenReturn(Optional.of(processoExistente));
+
+    // Simula o save retornando o processo atualizado
+    Mockito.when(processoRepository.save(Mockito.any(Processo.class))).thenReturn(processoAtualizado);
+
+    // JSON da requisição
+    String json = new ObjectMapper().findAndRegisterModules().writeValueAsString(processoAtualizado);
+
+    // Executa a requisição PUT e valida o resultado
+    mockMvc.perform(put("/processos/{id}", id)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.numeroProcesso").value("2024-00001"))
+        .andExpect(jsonPath("$.assunto").value("Processo Atualizado"))
+        .andExpect(jsonPath("$.status").value("Concluído"));
+}
 
 }
