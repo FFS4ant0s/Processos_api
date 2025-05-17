@@ -2,6 +2,7 @@ package com.seatecnologia.processos_api.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,9 +45,10 @@ public class ProcessoController {
 
     // Criar novo processo
     @PostMapping
-    public Processo criar(@Valid @RequestBody Processo processo) {
-        return processoRepository.save(processo);
-    }
+    public ResponseEntity<Processo> criar(@Valid @RequestBody Processo processo) {
+    Processo novoProcesso = processoRepository.save(processo);
+    return ResponseEntity.status(HttpStatus.CREATED).body(novoProcesso);
+}
 
     // Atualizar processo
     @PutMapping("/{id}")
