@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.seatecnologia.processos_api.repository.ProcessoRepository;
@@ -138,6 +139,24 @@ public void testAtualizarProcesso_comSucesso() throws Exception {
         .andExpect(jsonPath("$.numeroProcesso").value("2024-00001"))
         .andExpect(jsonPath("$.assunto").value("Processo Atualizado"))
         .andExpect(jsonPath("$.status").value("Concluído"));
+}
+
+@Test
+public void testDeletarProcesso_comSucesso() throws Exception {
+    Long id = 1L;
+
+    Processo processo = new Processo("2024-00001", "Processo para Deletar", LocalDate.of(2024, 1, 1), "Aberto");
+    processo.setId(id);
+
+    // Simula o findById retornando o processo
+    Mockito.when(processoRepository.findById(id)).thenReturn(Optional.of(processo));
+
+    // Executa o DELETE e valida status 204 No Content
+    mockMvc.perform(delete("/processos/{id}", id))
+        .andExpect(status().isNoContent());
+
+    // Verifica se o delete foi chamado
+    Mockito.verify(processoRepository, Mockito.times(1)).delete(processo);
 }
 
 }
